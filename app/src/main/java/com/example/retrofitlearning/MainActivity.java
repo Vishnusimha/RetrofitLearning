@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.retrofitlearning.classes.Comment;
 import com.example.retrofitlearning.classes.Post;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
 //        getPosts();
 //        getPostsWithQuery();
-        getPostsWithMultipleQuery();
+//        getPostsWithMultipleQuery();
+        getPostsWithQueryMap();
+
 //        getComments();
     }
 
@@ -79,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void getPosts() {
         //Here we are starting a call for getting posts from endpoint posts. A post contains {id, user id, title, text}
         Call<List<Post>> call = jsonPlaceHolderApi.getPosts();
@@ -115,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void getPostsWithQuery() {
         //Here we are starting a call for getting posts from endpoint posts WITH A QUERY . A post contains {id, user id, title, text}
@@ -158,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         //Here we are starting a call for getting posts from endpoint posts WITH A QUERY . A post contains {id, user id, title, text}
         //sending user ID as a parameter to QUERY and get particular data
 //        asec/desc for acending/descending order of sorting. For sort parameter we should send based on what you need to sort
-        Call<List<Post>> call = jsonPlaceHolderApi.getPostsWithMultipleQuery(1,"id","desc");
+        Call<List<Post>> call = jsonPlaceHolderApi.getPostsWithMultipleQuery(2,"id","desc");
         // This happens in background{retrofit helps us to run this in background}
         call.enqueue(new Callback<List<Post>>() {
             @Override
@@ -188,6 +190,41 @@ public class MainActivity extends AppCompatActivity {
 //               This executes on failure of call. We can display an error msg here or cancel the call.
                 result.setText(String.format("%s %s", getString(R.string.error), t.getMessage()));
 //                call.cancel();
+            }
+        });
+    }
+
+    private void getPostsWithQueryMap() {
+        Map<String,String> parameters = new HashMap<>();
+        parameters.put("userId","2");
+        parameters.put("_sort","id");
+        parameters.put("_order","desc");
+
+        Call<List<Post>> call = jsonPlaceHolderApi.getPostsWithQueryMap(parameters);
+        call.enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if (!response.isSuccessful()) {
+                    result.setText("Code: " + response.code());
+                    return;
+                }
+
+                List<Post> posts = response.body();
+                assert posts != null;
+                for (Post post : posts) {
+                    String content = "";
+                    content += "ID: " + post.getId() + "\n";
+                    content += "User ID: " + post.getUserId() + "\n";
+                    content += "Title : " + post.getTitle() + "\n";
+//                    content += "Text : " + post.getText() + "\n\n";
+
+                    result.append("\n\n" + content);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                result.setText(String.format("%s %s", getString(R.string.error), t.getMessage()));
             }
         });
     }
