@@ -3,7 +3,7 @@ package com.example.retrofitlearning.classes;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO CLass
+ * POJO CLass - Plain Java object
  */
 
 public class Post {
@@ -13,6 +13,12 @@ public class Post {
 
     @SerializedName("body")
     private String text;
+
+    public Post(int userId, String title, String text) {
+        this.userId = userId;
+        this.title = title;
+        this.text = text;
+    }
 
     public int getUserId() {
         return userId;
